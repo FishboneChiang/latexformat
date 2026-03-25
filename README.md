@@ -1,6 +1,6 @@
 # latexformat
 
-> A Simple LaTeX formatter written in Nim
+> A minimal Latex formatter written in Nim
 
 While working on a PhD paper with LaTeX source files recently, I noticed that formatting my paper became unbearably slow as the project grew.
 
