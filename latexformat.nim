@@ -9,10 +9,10 @@ proc left_right_pairs(line: string): (int, int) =
   var left: int = 0
   var right: int = 0
   for i in 0..<(line.len):
-    if line[i] == '{':
+    if line[i] == '{' or line[i] == '[':
       if i > 0 and isEscaped(line, i): continue
       left += 1
-    if line[i] == '}':
+    if line[i] == '}' or line[i] == ']':
       if i > 0 and isEscaped(line, i): continue
       right += 1
   return (left, right)
