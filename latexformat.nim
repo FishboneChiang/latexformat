@@ -8,16 +8,11 @@ proc isEscaped(s: string, pos: int): bool =
 proc left_right_pairs(line: string): (int, int) =
   var left: int = 0
   var right: int = 0
-  var in_math = false
   for i in 0..<(line.len):
-    if line[i] == '$' and (i == 0 or not isEscaped(line, i)):
-      in_math = not in_math
-      continue
-    if in_math: continue
-    if line[i] == '{' or line[i] == '[':
+    if line[i] == '{':
       if i > 0 and isEscaped(line, i): continue
       left += 1
-    elif line[i] == '}' or line[i] == ']':
+    if line[i] == '}':
       if i > 0 and isEscaped(line, i): continue
       right += 1
   return (left, right)
@@ -25,6 +20,7 @@ proc left_right_pairs(line: string): (int, int) =
 when isMainModule:
   let indent = "\t"
   var level = 0
+  var in_display_math = false
 
   for line in lines(stdin):
     let raw_content = strip(line, chars = {'\t', ' '})
@@ -41,6 +37,21 @@ when isMainModule:
 
     if content.contains(r"\begin{document}") or content.contains(r"\end{document}"):
       echo content, comment; continue
+
+    if content.contains("$$"):
+      if in_display_math:
+        in_display_math = false
+        if level > 0: level -= 1
+        echo indent.repeat(level), content, comment
+      else:
+        echo indent.repeat(level), content, comment
+        level += 1
+        in_display_math = true
+      continue
+    if in_display_math:
+      echo indent.repeat(level), content, comment
+      continue
+
     var (l, r) = left_right_pairs(content)
     var pos = 0
     while true:
